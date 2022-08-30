@@ -1,0 +1,24 @@
+{
+  "name": "3e4-julius",
+  "version": "1.0.0",
+  "description": "Contenue du cours 3e4",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Julius-1974350/3E4.git"
+  },
+  "author": "Julius Leblanc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Julius-1974350/3E4/issues"
+  },
+  "homepage": "https://github.com/Julius-1974350/3E4#readme",
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "express": "^4.18.1"
+  }
+}
