@@ -1,6 +1,8 @@
 import PlanetsRoutes from "./routes/planets-routes.js";
+import database from "../libs/database.js";
 import express from "express";
 import errors from "./middlewares/errors.js";
+database();
 const app = express();
 app.use(express.json()); //Permettre à notre serveur de comprendre le json recu
 //TODO: Ajouter du code ici

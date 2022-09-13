@@ -1,17 +1,19 @@
+import './load-env.js';
+
 import chalk from "chalk";
 
 import app from './src/app.js';
 
-const PORT = 4200;
+const PORT = process.env.PORT;
 
 app.listen(PORT, err => {
 	if(err){
 		//nous avons une erreur, on pourrait faire du code plus brillant.
 		process.exit(1);
 	}
-	console.log(chalk.rgb(255, 10, 120)('Server listening on port ${PORT}'));
+	//console.log(chalk.rgb(255, 10, 120)(­`Server listening on port ${PORT}`));
 });
-
+/*
 console.log("Test");
 
 const log = console.log;
@@ -44,4 +46,4 @@ DISK: ${chalk.yellow('70%')}
 
 // Use RGB colors in terminal emulators that support it.
 log(chalk.rgb(123, 45, 67).underline('Underlined reddish color'));
-log(chalk.hex('#DEADED').bold('Bold gray!'));
+log(chalk.hex('#DEADED').bold('Bold gray!'));*/
