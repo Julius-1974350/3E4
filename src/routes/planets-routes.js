@@ -1,5 +1,6 @@
 import express from "express";
 import PLANETS from '../data/planets.js';
+import planetsRepository from '../repositories/planets-repository.js'
 const router = express.Router();
 
 class PlanetsRoutes {
@@ -11,11 +12,15 @@ class PlanetsRoutes {
         //router.get('/:idPlanet', this.getOne); // /planets/:idPlanets
         router.delete('/:idPlanet', this.deleteOne); // /planets/:idPlanets
     }
-    getAll(req, res, next){
-        res.status(200);
-        res.json(PLANETS);
+    async getAll(req, res, next){
+        try {
+            const planets = await planetsRepository.retrieveAll();
+            res.status(200).json(planets);
+        } catch (err) {
+            return next(err);   
+        }
     }
-    getOne(req, res, next){
+    async getOne(req, res, next){
         // const idPlanet = req.params.idPlanet;
         // for(let planet of PLANETS){
         //     if(planet.id === idPlanet){
@@ -27,18 +32,22 @@ class PlanetsRoutes {
         // }
         // res.status(404);
         // res.end();
-        const idPlanet = parseInt(req.params.idPlanet, 10);
-        const planet = PLANETS.filter(p => p.id === idPlanet);
-        if(planet.length > 0){
-            res.status(200);
-            res.json(planet[0]);
+        try {
+            let planet = await planetsRepository.retrieveOne(req.params.idPlanet);
+            if(!planet){
+                return next(HttpError.NotFound(`La planète avec l'identifiant ${req.params.idPlanet} n'existe pas.`))
+            }
+            // Transformer/Nettoyer l'objet avant de l'envoyer dans la réponse
+            planet = planet.toObject({getters:false, virtuals:false});
+            planet = planetsRepository.transform(planet);
+            res.status(200).json(planet);
+        } catch (err) {
+            return next(err);
         }
-        else{
-           return next(HttpError.NotFound(`La planète avec l'indentifiant ${idPlanet} n'existe pas`));
-        }
+
     }
-    post(req, res, next){
-        const newPlanet = req.body;
+    async post(req, res, next){
+        /*const newPlanet = req.body;
         if(newPlanet){
             const index = PLANETS.findIndex(p => p.id === req.body.id);
             if(index === -1) {
@@ -49,6 +58,14 @@ class PlanetsRoutes {
             }
         }else{
             return next(HttpError.BadRequest('Aucune information transmise'));
+        }*/
+        try {
+            let newPlanet = await planetsRepository.create(req.body);
+            newPlanet = newPlanet.toObject({getters:false, virtuals:false});
+            newPlanet = planetsRepository.transform(newPlanet);
+            res.status(201).json(newPlanet);
+        } catch (err) {
+            return next(err);
         }
     }
     deleteOne(req, res, next){
