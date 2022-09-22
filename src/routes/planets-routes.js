@@ -14,7 +14,29 @@ class PlanetsRoutes {
     }
     async getAll(req, res, next){
         try {
-            const planets = await planetsRepository.retrieveAll();
+            const transformOptions = {};
+            const filter = {};
+            if (req.query.explorer) {
+                filter.discoveredBy = req.query.explorer;
+            }
+            if (req.query.unit) {
+                const unit = req.query.unit;
+                if (unit === 'c') {
+                    transformOptions.unit = unit;
+                }else{
+                    return next(HttpError.BadRequest('Le paramètre unit doit avoir comme valeur c pour Celsius'));
+                }
+                
+            }
+
+            let planets = await planetsRepository.retrieveAll(filter);
+            //Transformation
+            //Map == boucle
+            planets = planets.map(p => {
+                p = p.toObject({getters:false, virtuals:false});
+                p = planetsRepository.transform(p, transformOptions);
+                return p;
+            });
             res.status(200).json(planets);
         } catch (err) {
             return next(err);   
@@ -68,14 +90,26 @@ class PlanetsRoutes {
             return next(err);
         }
     }
-    deleteOne(req, res, next){
+    async deleteOne(req, res, next){
+        try {
+            const idPlanet = req.params.idPlanet;
+            const deleteResult = await planetsRepository.delete(idPlanet);
+            if (deleteResult) {
+                res.status(204).end();
+            } else {
+                return next(HttpError.NotFound(`La planète avec l'indentifiant ${req.params.idPlanet} n'existe pas`));
+            }
+        } catch (err) {
+            return next(err);
+        }
+        /*
         const idPlanet = parseInt(req.params.idPlanet, 10);
         const index = PLANETS.findIndex(p => p.id === idPlanet)
         if(index === -1){
             return next(HttpError.NotFound(`La planète avec l'indentifiant ${idPlanet} n'existe pas`));
         }
         PLANETS.splice(index, 1);
-        res.status(204).end();
+        res.status(204).end();*/
     }
 
 }
