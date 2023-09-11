@@ -1,2 +1,2 @@
 # Planets-js
-Lerning how to code in js and doing a server using node.
+Learning how to code in js and doing a server using node.
